@@ -1,0 +1,11 @@
+.logo{
+    display : flex;
+    align-items : center;
+    justify-content : center;
+    height : 120px;
+}
+
+.logo-image{
+    height : 60px;
+    filter :invert(100%) sepia(0%) saturate(5338%) hue-rotate(117deg) brightness(110%) contrast(101%);
+}
