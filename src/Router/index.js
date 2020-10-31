@@ -52,6 +52,10 @@ export default [
    {
       path:'/*',
       name:'last',
-      component:NotFound
+      component:()=>{
+         return (
+            <Redirect to='/admin/restaurant'/>
+         );
+      }
    }
 ];

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Modal,Input,Form,Select,Tag,TimePicker  } from 'antd';
+import React, { useEffect, useState  } from 'react';
+import { Modal,Input,Form,Select,TimePicker } from 'antd';
 import { useSelector,useDispatch } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
@@ -11,10 +11,14 @@ import { isShow,selectedRestaurant,tagsSelect } from '../state';
 /* actions */
 import { hideModal,updateRestaurant } from '../state';
 
+/* components */
+import Clock from './Clock';
+import RestaurantTags from './RestaurantTags';
+
 /* style */
 import './restaurantModal.scss';
 
-export default function RestaurantModal () {
+function RestaurantModal () {
 
    const dispatch = useDispatch();
 
@@ -48,12 +52,14 @@ export default function RestaurantModal () {
 
       let value = e.target.value;
 
-      setModalData({
-         ...modalData,
-         name:{
-            ...modalData.name,
-            [`${language}`]:value
-         }
+      setModalData((v)=>{
+         return {
+            ...v,
+            name:{
+               ...modalData.name,
+               [`${language}`]:value
+            }
+         };
       });
    }
 
@@ -66,9 +72,12 @@ export default function RestaurantModal () {
       if(!_.includes(restaurantTags,v)){
          restaurantTags.push(v);
 
-         setModalData({
-            ...modalData,
-            tags:restaurantTags
+         setModalData((v)=>{
+
+            return {
+               ...v,
+               tags:restaurantTags
+            };
          });
       }
    }
@@ -83,28 +92,44 @@ export default function RestaurantModal () {
       /* 构建新的tag数组 */
       let newTags = _.filter(restaurantTags,(item)=>{
 
-         return !(item.toUpperCase() === targetTag);
+         return item.toUpperCase() !== targetTag;
 
       });
 
-      setModalData({
-         ...modalData,
-         tags:newTags
-      });
-   }
+      setModalData((v)=>{
 
-   /* 渲染restaurant标签 */
-   function renderRestaurantTags (t){
-
-      const colors = [ 'magenta','orange','lime','cyan','purple','geekblue' ];
-
-      return _.map(t, (tag) => {
-
-         return (
-            <Tag key={ uuidv4() } color={ colors[_.random(colors.length)] } closable  onClose={ ()=>{ removeTag(tag); } } >{tag.toUpperCase()}</Tag>
-         );
+         return {
+            ...v,
+            tags:newTags
+         };
       });
    }
+
+   // const removeTag = useCallback(
+   //    (v,restaurantTags) => {
+   //       /* 先大写首字母做对比 */
+
+   //       if(!isVisible){
+   //          return;
+   //       }
+   //       const targetTag = v.toUpperCase();
+
+   //       /* 构建新的tag数组 */
+   //       let newTags = _.filter(restaurantTags,(item)=>{
+
+   //          return !(item.toUpperCase() === targetTag);
+
+   //       });
+
+   //       setModalData((v)=>{
+
+   //          return {
+   //             ...v,
+   //             tags:newTags
+   //          };
+   //       });
+   //    },[ isVisible ]
+   // );
 
    /*
     * 渲染所有tag
@@ -159,9 +184,12 @@ export default function RestaurantModal () {
       hours[day].start = start;
       hours[day].end = end;
 
-      setModalData({
-         ...modalData,
-         hours
+      setModalData((v)=>{
+
+         return {
+            ...v,
+            hours
+         };
       });
    }
 
@@ -209,7 +237,10 @@ export default function RestaurantModal () {
                   <Select defaultValue={ tags[0] } onSelect={ addTag } >
                      { renderAllTags() }
                   </Select>
-                  <div className='tag-container'>{ renderRestaurantTags(_.get(modalData,'tags',[])) }</div>
+                  <div className='tag-container'>
+
+                     <RestaurantTags tags={ _.get(modalData,'tags',[]) } removeTag={ removeTag }/>
+                  </div>
 
                </Input.Group>
 
@@ -219,11 +250,18 @@ export default function RestaurantModal () {
                label="开门时间"
             >
 
-               {renderHours(modalData.hours)}
-
+               <div>
+                  <Clock/>
+                  {renderHours(modalData.hours)}
+               </div>
             </Form.Item>
 
          </Form>
       </Modal>
    );
 }
+
+export default React.memo(RestaurantModal,(preProps,nextProps)=>{
+
+   return true;
+});

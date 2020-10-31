@@ -1,11 +1,15 @@
+import 'moment/locale/zh-cn';
 import React from 'react';
 import { BrowserRouter as Router , Switch } from 'react-router-dom';
 import _ from 'lodash';
-// import { v4 as uuidv4 } from 'uuid';
+import { useLocale } from './Common/utils';
 
 /* router */
 import routerConfig from './Router/index';
 import PrivateRoute from './Common/PrivateRoute';
+
+/* 初始化moment的翻译 */
+useLocale('zh-cn');
 
 function App () {
 

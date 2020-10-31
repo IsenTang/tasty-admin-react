@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import momentTZ from 'moment-timezone';
+import moment from 'moment';
 
 export function setStorage (key, data) {
    if(!key) return;
@@ -43,4 +45,14 @@ export function formatPrice (num,toFixed){
    // }
 
    return p;
+}
+
+// in the config function
+export function useLocale (name) {
+   // import locale as you do normally
+   // smth like `require('moment/locale/en-gb')` will happen down the lines
+   moment.locale(name); // apply it to moment
+
+   momentTZ.defineLocale(name, moment.localeData()._config); // copy locale to moment-timezone
+   momentTZ.locale(name); // apply it to moment-timezone
 }
