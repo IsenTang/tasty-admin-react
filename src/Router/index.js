@@ -7,6 +7,7 @@ import Login from '../Features/Login/Login';
 import Layout from '../Features/Layout/Layout';
 import Restaurant from '../Features/Restaurant/Restaurant';
 import Menu from '../Features/Menu/Menu';
+import Order from '../Features/Order/Order';
 
 /* 404 */
 import NotFound from '../Features/404/NotFound';
@@ -31,6 +32,11 @@ export default [
             path:'/menu',
             name:'menu',
             component:Menu
+         },
+         {
+            path:'/order',
+            name:'order',
+            component:Order
          },
          {
             path:'/',

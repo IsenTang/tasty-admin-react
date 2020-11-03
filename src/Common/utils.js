@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import momentTZ from 'moment-timezone';
-import moment from 'moment';
+import Moment from 'moment';
+const MomentRange = require('moment-range');
+
+const moment = MomentRange.extendMoment(Moment);
 
 export function setStorage (key, data) {
    if(!key) return;

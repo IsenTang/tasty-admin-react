@@ -73,6 +73,13 @@ export default function Layout ({ routes }) {
                } }>
                      菜单
                </Menu.Item>
+
+               <Menu.Item key="orderOption" icon={ <DesktopOutlined /> } onClick={ ()=>{
+
+                  history.push(`${url}/order`);
+               } }>
+                     订单
+               </Menu.Item>
             </Menu>
          </Sider>
 
