@@ -25,24 +25,31 @@ export default function Order () {
 
    const [ time, setTime ] = useState([]);
 
-   const [ option , setOption ] = useState({
+   const [ lineOption , setLineOption ] = useState({
       title:{
-         text: '线框图'
+         text: '订单量'
       },
       xAxis: {
          type: 'category',
-         data: [  ]
+         data: []
       },
       yAxis: {
          type: 'value'
       },
    });
 
+   const [ pieOption , setpieOption ] = useState({
+      title:{
+         text: '订单人群'
+      }
+   });
+
    useEffect(()=>{
 
       if(!_.isEmpty(list)){
 
-         updateOptions();
+         updateLineOptions();
+         updatePieOptions();
       }
 
    },[ list ]);
@@ -61,7 +68,7 @@ export default function Order () {
    /*
     * 更新线框图的数据
    */
-   function updateOptions (){
+   function updateLineOptions (){
 
       const formatStr = 'YYYY-MM-DD';
       let data = _(list).groupBy((item)=>{
@@ -75,23 +82,33 @@ export default function Order () {
 
       const date = Array.from(range).map(m => m.format(formatStr));
 
-      // 每天订单量
+      // 每天订单量 线框图
       const count = _.map(date,(d)=>{
 
          return data[d] ? data[d].length : 0;
       });
 
-      setOption((v)=>{
+      // 每天订单量 饼图
+      const dayCount = _.map(date,(d)=>{
+
+         return {
+            name:d,
+            value :data[d] ? data[d].length : 0
+         };
+      });
+
+      setLineOption((v)=>{
 
          return {
             ...v,
             xAxis: {
                type: 'category',
-               data: date
+               data: date,
             },
             yAxis: {
                type: 'value'
             },
+            grid:{ right:'50%' },
             series: [ {
                data: count,
                type: 'line',
@@ -104,6 +121,49 @@ export default function Order () {
                      }
                   }
                }
+            } ,{
+               data:dayCount,
+               type:'pie',
+               radius:'50%',
+               center:[ '75%','50%' ],
+               label:{
+                  show:true,
+                  formatter:'{b} : {c} ({d}%)'
+               }
+            } ]
+         };
+      });
+   }
+
+   // 更新饼图
+   function updatePieOptions (){
+
+      let data = _(list).groupBy((item)=>{
+
+         if(item.user){
+            return item.user.username;
+         }
+      }).value();
+
+      const userCount = _.map(data,(v,k)=>{
+
+         return {
+            name:k,
+            value :v.length
+         };
+      });
+
+      setpieOption((v)=>{
+         return {
+            ...v,
+            series: [  {
+               data:userCount,
+               type:'pie',
+               radius:'50%',
+               label:{
+                  show:true,
+                  formatter:'{b} : {c} ({d}%)'
+               }
             } ]
          };
       });
@@ -114,7 +174,14 @@ export default function Order () {
          <DatePicker.RangePicker style={{ width : '70%' }}
             allowClear={ false }
             onChange= { handleTime }/>
-         <ReactEcharts option={ option } theme='vintage'/>
+
+         <div style={{ 'marginTop' :'50px' }}>
+            <ReactEcharts option={ lineOption } theme='vintage'/>
+         </div>
+
+         <div style={{ 'marginTop' :'50px' }}>
+            <ReactEcharts option={ pieOption } theme='vintage'/>
+         </div>
       </div>
    );
 }
